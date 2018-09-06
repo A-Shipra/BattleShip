@@ -21,10 +21,18 @@ namespace BattleshipGame
     }
     public class Player
     {
-        public Random _random = new Random();
-        const int _boradSize = 10;
-        public List<BoardTile> _boardTiles;
-        public readonly string _orientation;
+        private Random _random = new Random();
+        private const int _boradSize = 10;
+        private List<BoardTile> _boardTiles;
+        private readonly string _orientation;
+        private int TotalShots = 0;
+        private int ShotsMissed = 0;
+        private int ShipDestroyed = 0;
+
+        public string ShootingSummary()
+        {
+            return $"Total shots fired:{TotalShots}\n Missed Shots:{ShotsMissed}\nShips Destroyed:{ShipDestroyed}";
+        }
 
         public Player(string orientation)
         {
@@ -56,20 +64,27 @@ namespace BattleshipGame
 
         public string ShootTile(int x, int y)
         {
+            ++TotalShots;
+
             var tile = _boardTiles.Find(a => (a.x == x) && (a.y == y));
+
             if (tile.IsShotAlready)
             {
-                return "Shot already";
+                ++ShotsMissed;
+                return "Shot already!";
             }
+
             tile.IsShotAlready = true;
             if (tile.status == TileStatus.Ship)
             {
                 tile.status = TileStatus.Hit;
-                return "Hit";
+                ++ShipDestroyed;
+                return "Hit!";
             }
             else
             {
-                return "Miss";
+                ++ShotsMissed;
+                return "Missed!";
             }
 
         }
@@ -92,7 +107,7 @@ namespace BattleshipGame
 
         private bool AddShipAtValidTiles(int xcoor, int ycoor, int shipSize)
         {
-            List<BoardTile> _tempBoardTiles = new List<BoardTile>();
+            List<BoardTile> tempBoardTiles = new List<BoardTile>();
 
             if (_orientation == "Horizontal")
             {
@@ -111,7 +126,7 @@ namespace BattleshipGame
                 {
                     int tileXLocation = startXLocation - i;
                     BoardTile tile = new BoardTile { x = tileXLocation, y = ycoor, status = TileStatus.Ship };
-                    _tempBoardTiles.Add(tile);
+                    tempBoardTiles.Add(tile);
 
                     if (_boardTiles.Exists(a => (a.x == tileXLocation) && (a.y == ycoor) && (a.status == TileStatus.Ship)))
                         return false;//Ship already at this location
@@ -133,7 +148,7 @@ namespace BattleshipGame
                 {
                     int tileYLocation = startYLocation - i;
                     BoardTile tile = new BoardTile { x = xcoor, y = tileYLocation, status = TileStatus.Ship };
-                    _tempBoardTiles.Add(tile);
+                    tempBoardTiles.Add(tile);
 
 
                     if (_boardTiles.Exists(a => (a.x == xcoor) && (a.y == tileYLocation) && (a.status == TileStatus.Ship)))
@@ -141,7 +156,7 @@ namespace BattleshipGame
                 }
             }
 
-            foreach (var newTile in _tempBoardTiles)
+            foreach (var newTile in tempBoardTiles)
             {
                 _boardTiles.Find(a => (a.x == newTile.x) && (a.y == newTile.y)).status = TileStatus.Ship;
             }

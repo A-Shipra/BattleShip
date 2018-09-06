@@ -17,8 +17,8 @@ namespace BattleshipGame
         public Form1()
         {
             InitializeComponent();
-            Shoot.Visible = false;
-            addShip.Visible = false;
+            btnShoot.Visible = false;
+            btnAddShip.Visible = false;
             xcoor.Visible = false;
             ycoor.Visible = false;
             battleShipSize.Visible = false;
@@ -28,15 +28,15 @@ namespace BattleshipGame
 
         private void Start_Click(object sender, EventArgs e)
         {
-            string orient = orientation.SelectedItem.ToString();
+            string orient = cbOrientation.SelectedItem.ToString();
             Player1 = new Player(orient);
-            Start.Visible = false;
-            orientation.Enabled = false;
-            addShip.Visible = true;
+            btnStart.Visible = false;
+            cbOrientation.Enabled = false;
+            btnAddShip.Visible = true;
             battleShipSize.Visible = true;
             lblBattleshipSize.Visible = true;
-            status.Text = "";
-            lblGameResult.Text = "New Game Started";
+            lblStatus.Text = "";
+            lblStatus.Text = "New Game Started";
             richTextBox1.Text=Player1.DebugMessages();
         }
 
@@ -48,31 +48,36 @@ namespace BattleshipGame
             xcoor.Visible = true;
             ycoor.Visible = true;
             lblTarget.Visible = true;
-            Shoot.Visible = true;
-            status.Text = "Add more ship or start shooting";
+            btnShoot.Visible = true;
+            lblStatus.Text = "Add more ship or start shooting";
             richTextBox1.Text = Player1.DebugMessages();
 
         }
 
         private void Shoot_Click(object sender, EventArgs e)
         {
+            btnAddShip.Enabled = false;
+            battleShipSize.Enabled = false;
+
             int x = Convert.ToInt32(xcoor.Value);
             int y = Convert.ToInt32(ycoor.Value);
-            status.Text = Player1.ShootTile(x, y);
+            lblStatus.Text = Player1.ShootTile(x, y);
+            lblStatus.Text += "\n\n"+Player1.ShootingSummary();
          //   Player1.ShowDebugMessages();
             richTextBox1.Text = Player1.DebugMessages();
             if (Player1.IsGameFinished())
             {
-                Start.Visible = true;
-                Shoot.Visible = false;
-                addShip.Visible = false;
+                btnStart.Visible = true;
+                btnShoot.Visible = false;
+                btnAddShip.Visible = false;
                 xcoor.Visible = false;
                 ycoor.Visible = false;
                 battleShipSize.Visible = false;
                 lblBattleshipSize.Visible = false;
                 lblTarget.Visible = false;
-                orientation.Enabled = true;
-                lblGameResult.Text = "You Won the Game.";
+                cbOrientation.Enabled = true;
+                lblStatus.Text += "\n\n" + "You Won the Game.";
+                //lblGameResult.Text = "You Won the Game.";
             }
         }
     }
